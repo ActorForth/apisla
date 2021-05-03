@@ -1,0 +1,6 @@
+include README.rst CHEATSHEET.rst LICENSE* CONTRIBUTING*
+include .coveragerc
+include test-requirements.txt
+include apisla/py.typed
+recursive-include docs *
+prune docs/build
