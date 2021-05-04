@@ -10,7 +10,8 @@ origin_clock_start = datetime.datetime.now().timestamp() - time.perf_counter()
 
 def pretty_time(seconds : float) -> str:
 	present = time.localtime(origin_clock_start + seconds)
-	return str(datetime.datetime(present.tm_year, present.tm_mon, present.tm_mday, present.tm_hour, present.tm_min, present.tm_sec))
+	return str(datetime.datetime(present.tm_year, present.tm_mon, 
+			   present.tm_mday, present.tm_hour, present.tm_min, present.tm_sec))
 
 @app.route("/")
 async def timed_api(request: Request): # Callable?
