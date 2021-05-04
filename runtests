@@ -1,0 +1,1 @@
+py.test -xs --muffin-app apisla
