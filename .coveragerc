@@ -1,6 +1,8 @@
 [run]
 branch=True
-source=apisla
+source=
+  apisla
+  slatracker
 
 [report]
 precision = 1
