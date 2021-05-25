@@ -1,0 +1,37 @@
+version: "3.7"
+services:
+    sla-tracker:
+        image: sla-tracker #${SLA_TRACKER_TAG_NAME}
+        build:
+          context: ./slatracker/
+          dockerfile: ./Dockerfile
+        container_name: sla-tracker
+        ports:
+            - "2424:2424"
+        depends_on: 
+            - api-sla
+        networks:
+            - biggestfan-network
+        command: hypercorn -b 0.0.0.0:2424 --worker-class trio sla_tracker:app -w 1
+
+    api-sla:
+        image: api-sla
+        build:
+          context: ./apisla/
+          dockerfile: ./Dockerfile
+        container_name: api-sla
+        image: api-sla
+        volumes:
+          - ./apisla:/app
+        ports: 
+          - "2323:2323"
+        environment: 
+          - DEBUG_MODE=False
+        networks:
+          - biggestfan-network
+        hostname: "bitcoin-bridging"
+        command: hypercorn -b 0.0.0.0:2323 --worker-class trio rate_limited_request:app
+
+networks:
+    biggestfan-network:
+        external: true
