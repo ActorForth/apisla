@@ -14,6 +14,10 @@ def mocked_external(*args, **kwargs):
 
     return 200, external_address_details
 
+async def mocked_sla_tracker(*args, **kwargs):
+
+    return 1
+
 # We can just use 'async def test_*' to define async tests.
 # This also uses a virtual clock fixture, so time passes quickly and
 # predictably.
@@ -33,8 +37,12 @@ async def test_app():
 	response = await client.get('/', timeout=6)
 	assert response.status_code == 405
 
+@mock.patch("apisla.rate_limited_request.httpx.post")
 @mock.patch("apisla.rate_limited_request.httpx.get", side_effect=mocked_external)
-async def test_post(mock1):
+async def test_post(mock1, mock2):
+    mock2.side_effect = [
+
+    ]
     client = Client(app)
     data = {"ip": 1,
             "url": "https://rest.bch.actorforth.org/v2/address/details/bitcoincash:qzs02v05l7qs5s24srqju498qu55dwuj0cx5ehjm2c"}
@@ -42,28 +50,6 @@ async def test_post(mock1):
     print(f"response: {response}")
     response = await response.json()
     assert response["slpAddress"] == external_address_details["slpAddress"]
-
-# @mock.patch("apisla.rate_limited_request.httpx.get", side_effect=mocked_external)
-# async def test_n_amounts(mock1):
-#     async def call_client(array, client, i):
-#         data = {"ip": i,
-#                 "url": 'https://rest.bch.actorforth.org/v2/address/details/bitcoincash:qzs02v05l7qs5s24srqju498qu55dwuj0cx5ehjm2c'}
-#         result = await client.post('/', data=data, timeout=6)
-#         text = await result.json()
-#         array.append(text['delta'])
-
-#     client = Client(app)
-#     array = []
-#     async with trio.open_nursery() as nursery:
-#         for i in range(10):
-#             nursery.start_soon(call_client, array, client, i)
-#             await trio.sleep(0.0001)
-#     assert len(array) == 10
-#     # print(array)
-#     print(f"max: {max(array)}")
-#     print(f"min: {min(array)}")
-#     print(f"avg: {sum(array)/len(array)}")
-#     assert 1==2
 
 
 async def test_call_external():
